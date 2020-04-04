@@ -64,3 +64,15 @@ a:hover{
     padding: 10px 0 15px 10px;
     font-size: 14px;
 }
+.mourse{
+    width: 100px;
+    height: 100px;
+    border:1px solid;
+    margin:100px auto;
+    margin-top: 100px;
+
+    transition: all 1s linear;
+}
+div:hover{
+    transform: scale(2);
+}

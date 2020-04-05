@@ -1,0 +1,107 @@
+* {
+  margin : 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  background-color: #ecf0f5;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+header {
+  height: $header-height;
+  padding: 0 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #2e2e2e;
+  
+  .header-left {
+    float: left;
+    .logo {
+      line-height: 60px;
+      vertical-align: middle;
+      height: 35px;
+    }
+    span {
+      line-height: 60px;
+      vertical-align: middle;
+      font-size: 18px;
+      color: white;
+      margin-left: 15px;
+    }
+  }
+
+  .header-right {
+    float: right;
+    height: 100%;
+    .search {
+      width: 263px;
+      height: 32px;
+      margin: 14px 0;
+      box-sizing: border-box;
+
+      // icon图标
+      padding-left: 30px;
+      background: #eee url("/css/icons/icon-search.svg") no-repeat;
+      background-size: 24px;
+      background-position: left 6px top 4px;
+
+      // 边框
+      outline: none;
+      border-radius: 16px;
+      border: 1px solid #eee;
+    }
+  }
+}
+
+.toc {
+  position: fixed;
+  top: $header-height;
+  left: 0;
+  bottom: $footer-height;
+  width: $toc-width;
+
+  background-color: #3f3f3f;
+
+  a {
+    color: white;
+  }
+
+  ul, li {
+    list-style: none;
+  }
+
+  li ul {
+    padding-left: 30px;
+  }
+}
+
+.content {
+  margin-top: calc(#{$header-height} + #{$content-margin});
+  margin-right: $content-margin;
+  margin-bottom: calc(#{$footer-height} + #{$content-margin});
+  margin-left: calc(#{$toc-width} + #{$content-margin});
+  min-height: calc(100vh - #{$footer-height} - #{$header-height} - 2*#{$content-margin});
+  background-color: #fff;
+}
+
+.footer {
+  height: $footer-height;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  background-color: #ccc;
+
+  line-height: $footer-height;
+  vertical-align: middle;
+  text-align: center;
+}

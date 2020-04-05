@@ -1,0 +1,16 @@
+<svg id="baseline-search-24px" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #999;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <path id="路径_437" data-name="路径 437" class="cls-1" d="M14.43,13.73a6.51,6.51,0,1,0-.7.7ZM9.5,14A4.5,4.5,0,1,1,14,9.5,4.494,4.494,0,0,1,9.5,14Z"/>
+  <path id="路径_438" data-name="路径 438" class="cls-2" d="M0,0H24V24H0Z"/>
+  <rect id="矩形_238" data-name="矩形 238" class="cls-1" width="2" height="9" transform="translate(12.379 14.5) rotate(-45)"/>
+</svg>

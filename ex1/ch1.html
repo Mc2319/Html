@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="shortcut icon" href="" type="image/x-icon">
+  <meta name="generator" content="Hexo 4.2.0"></head>
+  <body>
+    <header>
+      <div class="header-left">
+        <a href=""><img class="logo" src=""/></a>
+        <span>|</span>
+        <a href="/"><span>Cython教程</span></a>
+      </div>
+      <div class="header-right">
+        <input class="search" type="text" placeholder="请输入关键字搜索">
+      </div>
+    </header>
+    <aside class="toc">
+      <ul>
+        
+          
+          <li>
+            <a href="ch1.html">
+              <img src="">
+              Cython的安装和使用
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch2.html">
+              <img src="">
+              Cython封装C库基础
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch3.html">
+              <img src="">
+              pxd文件
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch4.html">
+              <img src="">
+              异步和内存管理
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch5.html">
+              <img src="">
+              附录
+            </a>
+          </li>
+        
+      </ul>
+    </aside>
+    <main class="content">
+      <h1 id="第1章-Cython的安装和使用"><a href="#第1章-Cython的安装和使用" class="headerlink" title="第1章 Cython的安装和使用"></a>第1章 Cython的安装和使用</h1><h2 id="1-1-安装"><a href="#1-1-安装" class="headerlink" title="1.1 安装"></a>1.1 安装</h2><p>在Linux下通过<code>pip install Cython</code>安装。安装完毕后执行<code>cython --version</code>，如果输出了版本号即安装成功。</p>
+<h2 id="1-2-快速入门"><a href="#1-2-快速入门" class="headerlink" title="1.2 快速入门"></a>1.2 快速入门</h2><blockquote>
+<p>本节完整代码见<a href="https://github.com/chend0316/cython_tutorial/tree/master/ch1/1_helloworld" target="_blank" rel="noopener">这里</a></p>
+</blockquote>
+<p>安装完成后，我们创建一个Hello World项目，需要创建<code>hello.pyx</code>和<code>setup.py</code>两个文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># file: hello.pyx</span><br><span class="line">def say_hello_to(name):</span><br><span class="line">    print(&quot;Hello %s!&quot; % name)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># file: setup.py</span></span><br><span class="line"><span class="keyword">from</span> distutils.core <span class="keyword">import</span> setup</span><br><span class="line"><span class="keyword">from</span> Cython.Build <span class="keyword">import</span> cythonize</span><br><span class="line"></span><br><span class="line">setup(name=<span class="string">'Hello world app'</span>,</span><br><span class="line">      ext_modules=cythonize(<span class="string">"hello.pyx"</span>))</span><br></pre></td></tr></table></figure>
+
+<p>这样编译项目：<code>python setup.py build_ext --inplace</code>，会生成<code>hello.so</code>以及一些没用的中间文件。<br>下面测试我们生成的<code>hello.so</code>能不能用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding: utf-8</span></span><br><span class="line"><span class="comment"># 这个import会先找hello.py，找不到就会找hello.so</span></span><br><span class="line"><span class="keyword">import</span> hello  <span class="comment"># 导入了hello.so</span></span><br><span class="line"></span><br><span class="line">hello.say_hello_to(<span class="string">'张三'</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-3-Cython实现Python调用C库"><a href="#1-3-Cython实现Python调用C库" class="headerlink" title="1.3 Cython实现Python调用C库"></a>1.3 Cython实现Python调用C库</h2><blockquote>
+<p>完整代码见<a href="https://github.com/chend0316/cython_tutorial/tree/master/ch1/2_math" target="_blank" rel="noopener">这里</a></p>
+</blockquote>
+<p>如果我们已经有一个C语言的动态库、静态库，如何在Python中调用外部C库呢（本节以动态库为例）？</p>
+<p>现有C库如下，是一个叫做cmath的库：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// file: cmath.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cmath.h"</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// file: cmath.h</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>下面将该cmath封装为Python库，为了防止名称冲突，命名为pymath：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># file: pymath.pyx</span><br><span class="line">cdef extern from &quot;cmath.h&quot;:</span><br><span class="line">    int add(int a, int b)</span><br><span class="line"></span><br><span class="line">def pyadd(int a, int b):</span><br><span class="line">    return add(a, b)</span><br></pre></td></tr></table></figure>
+
+<p>然后还需要写<code>setup.py</code>，但这里不想写<code>setup.py</code>了，因为本文主要使用gcc手工编译的方式。</p>
+<h2 id="1-4-手工gcc编译"><a href="#1-4-手工gcc编译" class="headerlink" title="1.4 手工gcc编译"></a>1.4 手工gcc编译</h2><blockquote>
+<p>本节完整代码见<a href="https://github.com/chend0316/cython_tutorial/tree/master/ch1/3_gcc" target="_blank" rel="noopener">这里</a></p>
+</blockquote>
+<p>本节介绍gcc这种比较原始的编译方式，是希望你能搞懂Cython如何运作。如果能掌握那么相信在日后的开发工作中各种编译、部署的问题都不太可能难倒你。</p>
+<p>我们知道Ubuntu下Python是这样安装的：<code>apt-get install python3</code>，但你可能不知道有这个东西：<code>apt-get install python3-dev</code>。<br><code>python3-dev</code>这个包安装的是Python的头文件，以Ubuntu 18.04为例，安装完成后你应该可以在<code>/usr/include/python3.6/</code>找到一些头文件。</p>
+<p>看图1-1可以看到3种方式的对比：</p>
+<ul>
+<li>第一条线是用Python/C API，有2个哭脸，不但代码写起来烦人，编译构建也烦人，所以我们才用Cython取代Python/C API；</li>
+<li>第二条线是我们最常用的setup.py，有2个笑脸，Cython项目最常用的方式；</li>
+<li>第三条线有1个哭脸，也是本节要讲的，如何使用gcc这种传统的方式来编译Cython项目；</li>
+</ul>
+<p><img src="img/1-1.png" alt="图1-1"></p>
+<p>主要步骤是：</p>
+<ul>
+<li>使用<code>cython xxx.pyx</code>生成<code>xxx.c</code></li>
+<li>然后使用<code>gcc -fPIC -shared -I/usr/include/python2.7/ xxx.c -o xxx.so</code>来生成so文件</li>
+<li>要注意头文件版本，自己用的是python2的头文件还是python3的头文件</li>
+</ul>
+
+    </main>
+    <footer class="footer">
+      完整介绍Cython是一个庞大的工程，本文只是介绍了Cython的皮毛，若有疑问欢迎交流。
+    </footer>
+    <script src="js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="shortcut icon" href="" type="image/x-icon">
+  <meta name="generator" content="Hexo 4.2.0"></head>
+  <body>
+    <header>
+      <div class="header-left">
+        <a href=""><img class="logo" src=""/></a>
+        <span>|</span>
+        <a href="/"><span>Cython教程</span></a>
+      </div>
+      <div class="header-right">
+        <input class="search" type="text" placeholder="请输入关键字搜索">
+      </div>
+    </header>
+    <aside class="toc">
+      <ul>
+        
+          
+          <li>
+            <a href="ch1.html">
+              <img src="">
+              Cython的安装和使用
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch2.html">
+              <img src="">
+              Cython封装C库基础
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch3.html">
+              <img src="">
+              pxd文件
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch4.html">
+              <img src="">
+              异步和内存管理
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch5.html">
+              <img src="">
+              附录
+            </a>
+          </li>
+        
+      </ul>
+    </aside>
+    <main class="content">
+      <h1 id="附录：Cython语法参考"><a href="#附录：Cython语法参考" class="headerlink" title="附录：Cython语法参考"></a>附录：Cython语法参考</h1><p>Cython易用的原因是它的代码跟Python几乎一样，Cython的语法是Python的「超集」，即Python代码一定是Cython代码，而Cython代码不一定是Python代码。比起Python来说，Cython多了一些跟C语言相关的语法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># Python语法</span><br><span class="line">import math  # 导入math.py或math.so或math目录</span><br><span class="line">from math import add as myadd  # Python：导入math.py中的add符号，为避免名字冲突，重命名为myadd</span><br><span class="line">math.add(1, 2)  # 访问math中的add符号</span><br><span class="line">myadd(1, 2)</span><br><span class="line"></span><br><span class="line"># 对应的Cython语法</span><br><span class="line">cimport math  # 导入math.pxd</span><br><span class="line">from math cimport add as myadd  # 导入math.pxd中的add符号，为避免名字冲突，重命名为myadd</span><br><span class="line">math.add(1, 2)  # 访问math中的add符号</span><br><span class="line">myadd(1, 2)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># Python语法</span><br><span class="line">def foo(a, b):  # 定义foo函数</span><br><span class="line">    c &#x3D; 0  # 创建Python的int对象</span><br><span class="line">    c &#x3D; a + b</span><br><span class="line">    return c</span><br><span class="line"></span><br><span class="line"># Cython语法</span><br><span class="line">cdef int foo(int a, int b):  # cdef是定义C语言函数，注意该函数不能被Python调用</span><br><span class="line">    cdef int c &#x3D; 0  # 这是C语言的int变量</span><br><span class="line">    c &#x3D; a + b</span><br><span class="line">    return c  # 返回C语言的int</span><br><span class="line"></span><br><span class="line"># Cython语法</span><br><span class="line">cpdef int foo(int a, int b):  # cpdef定义的函数可以被Python调用</span><br><span class="line">    cdef int c &#x3D; 0  # C语言的int变量</span><br><span class="line">    c &#x3D; a + b</span><br><span class="line"></span><br><span class="line">    # 返回的是Python的int对象</span><br><span class="line">    # Cython在这里隐式将C语言int变量转为了Python的int对象</span><br><span class="line">    # 因为变量c是基本类型，Cython帮忙转了，如果c是复杂的是不能直接return的</span><br><span class="line">    return c</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># Python语法</span><br><span class="line">class Person():</span><br><span class="line">    def __init__(self):  # 这是构造函数</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line"># Cython语法</span><br><span class="line">class Person():</span><br><span class="line">    def __init__(self):  # 和C语言相关的内存分配（如malloc）不能放在这里实现</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    def __cinit__(self):  # 和C语言相关的内存分配（如malloc）要放在这里实现 </span><br><span class="line">        ... &#x3D; malloc();</span><br><span class="line"></span><br><span class="line">    def __dealloc__(self):  # 和C语言相关的内存释放（如free）要放在这里实现 </span><br><span class="line">        free(...);</span><br></pre></td></tr></table></figure>
+
+
+
+    </main>
+    <footer class="footer">
+      完整介绍Cython是一个庞大的工程，本文只是介绍了Cython的皮毛，若有疑问欢迎交流。
+    </footer>
+    <script src="js/main.js"></script>
+  </body>
+</html>

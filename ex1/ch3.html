@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="shortcut icon" href="" type="image/x-icon">
+  <meta name="generator" content="Hexo 4.2.0"></head>
+  <body>
+    <header>
+      <div class="header-left">
+        <a href=""><img class="logo" src=""/></a>
+        <span>|</span>
+        <a href="/"><span>Cython教程</span></a>
+      </div>
+      <div class="header-right">
+        <input class="search" type="text" placeholder="请输入关键字搜索">
+      </div>
+    </header>
+    <aside class="toc">
+      <ul>
+        
+          
+          <li>
+            <a href="ch1.html">
+              <img src="">
+              Cython的安装和使用
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch2.html">
+              <img src="">
+              Cython封装C库基础
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch3.html">
+              <img src="">
+              pxd文件
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch4.html">
+              <img src="">
+              异步和内存管理
+            </a>
+          </li>
+        
+          
+          <li>
+            <a href="ch5.html">
+              <img src="">
+              附录
+            </a>
+          </li>
+        
+      </ul>
+    </aside>
+    <main class="content">
+      <h1 id="第3章-pxd文件"><a href="#第3章-pxd文件" class="headerlink" title="第3章 pxd文件"></a>第3章 pxd文件</h1><p>就像C语言有<code>.c</code>和<code>.h</code>文件，Cython有<code>.pyx</code>和<code>.pxd</code>文件，可以帮助更好的组织、管理代码，<code>pxd</code>也可以实现wrapper的复用。</p>
+<h2 id="3-1-名称冲突问题"><a href="#3-1-名称冲突问题" class="headerlink" title="3.1 名称冲突问题"></a>3.1 名称冲突问题</h2><blockquote>
+<p>本节完整代码见<a href="https://github.com/chend0316/cython_tutorial/tree/master/ch3/1_pxd" target="_blank" rel="noopener">这里</a></p>
+</blockquote>
+<p>在之前的例子中，我们把C函数的导入、Python wrapper的封装都放在了<code>pyx</code>文件中，这会导致一些符号名冲突。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">cdef extern from &quot;queue.h&quot;:</span><br><span class="line">    # 这是声明C语言中有一个名为Queue的结构体</span><br><span class="line">    ctypedef struct Queue:</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line"># 这是提供给Python用的类，我们其实也想起名叫做Queue，但C语言结构体也叫这个名字</span><br><span class="line"># 所以我们不得不把提供给Python的类名改为PyQueue</span><br><span class="line">cdef class PyQueue:</span><br><span class="line">    cdef Queue *_c_queue</span><br><span class="line"></span><br><span class="line">    def __cinit__(self):</span><br><span class="line">        self._c_queue &#x3D; ...</span><br></pre></td></tr></table></figure>
+<p>为了解决开发中遇到的这些问题，我们可以把声明放在<code>pxd</code>中，这样就多了一层命名空间，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># cqueue.pxd</span><br><span class="line">cdef extern from &quot;queue.h&quot;:</span><br><span class="line">    ctypedef struct Queue:</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
+<p>有了命名空间，在<code>pyx</code>中就不会产生符号名冲突了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># queue.pyx</span><br><span class="line">cimport cqueue</span><br><span class="line">cdef class Queue:</span><br><span class="line">    cdef cqueue.Queue *_c_queue</span><br><span class="line"></span><br><span class="line">    def __cinit__(self):</span><br><span class="line">        self._c_queue &#x3D; ...</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-2-Cython代码复用"><a href="#3-2-Cython代码复用" class="headerlink" title="3.2 Cython代码复用"></a>3.2 Cython代码复用</h2>
+    </main>
+    <footer class="footer">
+      完整介绍Cython是一个庞大的工程，本文只是介绍了Cython的皮毛，若有疑问欢迎交流。
+    </footer>
+    <script src="js/main.js"></script>
+  </body>
+</html>
